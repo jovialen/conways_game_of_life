@@ -1,0 +1,3 @@
+[submodule "dependencies/tex"]
+	path = dependencies/tex
+	url = https://github.com/jovialen/tex.git
