@@ -80,6 +80,19 @@ int main(int argc, char *argv[])
 	{
 		timer += tex::get_delta_time(world);
 
+		tex::vec2<int> hovered_cell = tex::get_hovered_cell(world);
+		if (tex::in_bounds(world, hovered_cell))
+		{
+			if (tex::get_mouse_down(world, tex::mouse_button::LEFT))
+			{
+				tex::set(world, hovered_cell, LIVE_CELL);
+			}
+			else if (tex::get_mouse_down(world, tex::mouse_button::RIGHT))
+			{
+				tex::set(world, hovered_cell, DEAD_CELL);
+			}
+		}
+
 		if (timer >= 1.0 / (double) TICKS_PER_SECOND)
 		{
 			timer = 0;
