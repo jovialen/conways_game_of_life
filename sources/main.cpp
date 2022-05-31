@@ -6,7 +6,7 @@
 #define DEAD_CELL ((tex::vec4<float>) { 0, 0, 0, 1 })
 #define LIVE_CELL ((tex::vec4<float>) { 1, 1, 1, 1 })
 
-constexpr int TICKS_PER_SECOND = 2;
+constexpr int TICKS_PER_SECOND = 10;
 
 bool is_alive(tex::vec4<float> cell)
 {
@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 	tex::set(world, (tex::vec2<int>) { 2, 3 }, LIVE_CELL);
 
 	double timer = 0;
+	bool running = true;
 	while (tex::update(world))
 	{
 		timer += tex::get_delta_time(world);
@@ -93,7 +94,16 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		if (timer >= 1.0 / (double) TICKS_PER_SECOND)
+		if (tex::get_key_down(world, tex::key::SPACE))
+		{
+			running = false;
+		}
+		else if (tex::get_key_down(world, tex::key::ENTER))
+		{
+			running = true;
+		}
+
+		if (timer >= 1.0 / (double) TICKS_PER_SECOND && running)
 		{
 			timer = 0;
 
