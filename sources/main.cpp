@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 	std::fill(back,              back + capacity, DEAD_CELL);
 
 	double timer = 0;
-	bool running = true;
+	bool running = false;
 	while (tex::update(world))
 	{
 		timer += tex::get_delta_time(world);
