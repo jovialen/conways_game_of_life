@@ -71,10 +71,6 @@ int main(int argc, char *argv[])
 	std::fill(tex::begin(world), tex::end(world), DEAD_CELL);
 	std::fill(back,              back + capacity, DEAD_CELL);
 
-	tex::set(world, (tex::vec2<int>) { 2, 1 }, LIVE_CELL);
-	tex::set(world, (tex::vec2<int>) { 2, 2 }, LIVE_CELL);
-	tex::set(world, (tex::vec2<int>) { 2, 3 }, LIVE_CELL);
-
 	double timer = 0;
 	bool running = true;
 	while (tex::update(world))
