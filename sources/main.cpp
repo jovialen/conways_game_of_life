@@ -1,10 +1,11 @@
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 #include <tex.hpp>
 
-#define DEAD_CELL ((tex::vec4<float>) { 0, 0, 0, 1 })
-#define LIVE_CELL ((tex::vec4<float>) { 1, 1, 1, 1 })
+#define DEAD_CELL (tex::vec4<float>{ 0, 0, 0, 1 })
+#define LIVE_CELL (tex::vec4<float>{ 1, 1, 1, 1 })
 
 constexpr int TICKS_PER_SECOND = 10;
 
