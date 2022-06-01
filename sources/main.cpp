@@ -99,6 +99,15 @@ void process_input(tex::world &world, bool *running)
 	{
 		*running = true;
 	}
+
+	if (tex::get_key_down(world, tex::key::S))
+	{
+		tex::save(world, "./game_of_life.bmp");
+	}
+	else if (tex::get_key_down(world, tex::key::L))
+	{
+		tex::load(&world, "./game_of_life.bmp");
+	}
 }
 
 int main()

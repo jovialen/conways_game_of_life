@@ -33,3 +33,5 @@ After compiling, you can run the application with the executable file named `cgo
 | ENTER       | Resume the simulation |
 | LEFT MOUSE  | Place living cell     |
 | RIGHT MOUSE | Kill cell             |
+| S           | Save current state    |
+| L           | Load last saved state |
