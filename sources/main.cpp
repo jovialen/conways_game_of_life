@@ -13,16 +13,16 @@ bool is_alive(tex::vec4<float> cell)
 	return cell.r > 0 || cell.g > 0 || cell.b > 0;
 }
 
-tex::vec4<float> get_cell_color(tex::world &world, tex::vec2<int> position)
+tex::vec4<float> get_cell_color(tex::map &map, tex::vec2<int> position)
 {
 	tex::vec4<float> cell_color;
-	cell_color.r = position.x / (float)tex::size(world).x;
-	cell_color.g = position.y / (float)tex::size(world).y;
+	cell_color.r = position.x / (float)tex::size(map).x;
+	cell_color.g = position.y / (float)tex::size(map).y;
 	cell_color.b = 1 - (cell_color.r / 2.0f + cell_color.g / 2.0f);
 	return cell_color;
 }
 
-std::vector<bool> get_neighbours(tex::world &world, tex::vec2<int> position)
+std::vector<bool> get_neighbours(tex::map &map, tex::vec2<int> position)
 {
 	std::vector<bool> neighbours;
 	for (int x_off = -1; x_off <= 1; x_off++)
@@ -35,9 +35,9 @@ std::vector<bool> get_neighbours(tex::world &world, tex::vec2<int> position)
 			neighbour_cell.x += x_off;
 			neighbour_cell.y += y_off;
 
-			if (tex::in_bounds(world, neighbour_cell))
+			if (tex::in_bounds(map, neighbour_cell))
 			{
-				neighbours.push_back(is_alive(tex::get(world, neighbour_cell)));
+				neighbours.push_back(is_alive(tex::get(map, neighbour_cell)));
 			}
 		}
 	}
@@ -46,11 +46,11 @@ std::vector<bool> get_neighbours(tex::world &world, tex::vec2<int> position)
 
 void tick(tex::world &world, tex::vec4<float> *back_buffer)
 {
-	tex::process(world, [&back_buffer](tex::world &world, tex::vec2<int> position) {
-		bool cell_alive = is_alive(tex::get(world, position));
+	tex::process(world, [&back_buffer](tex::map &map, tex::vec2<int> position) {
+		bool cell_alive = is_alive(tex::get(map, position));
 
 		// get cell neighbours
-		auto neighbours = get_neighbours(world, position);
+		auto neighbours = get_neighbours(map, position);
 		int num_alive = std::count(neighbours.begin(), neighbours.end(), true);
 
 		if (cell_alive)
@@ -71,8 +71,8 @@ void tick(tex::world &world, tex::vec4<float> *back_buffer)
 		}
 
 		// update buffer
-		back_buffer[tex::backend::get_linear_index(world, position)] = cell_alive ? get_cell_color(world, position) : DEAD_CELL;
-		return tex::get(world, position);
+		back_buffer[tex::backend::get_linear_index(map, position)] = cell_alive ? get_cell_color(map, position) : DEAD_CELL;
+		return tex::get(map, position);
 	});
 }
 
@@ -83,7 +83,7 @@ void process_input(tex::world &world, bool *running)
 	{
 		if (tex::get_mouse_down(world, tex::mouse_button::LEFT))
 		{
-			auto cell_color = get_cell_color(world, hovered_cell);
+			auto cell_color = get_cell_color(*tex::get_map(world), hovered_cell);
 			tex::set(world, hovered_cell, cell_color);
 		}
 		else if (tex::get_mouse_down(world, tex::mouse_button::RIGHT))
