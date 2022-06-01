@@ -93,7 +93,7 @@ void process_input(tex::world &world, bool *running)
 	}
 }
 
-int main(int argc, char *argv[])
+int main()
 {
 	tex::world world("Conway's Game of Life");
 
@@ -129,3 +129,13 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+#ifdef WINDOWS_BUILD
+#include <Windows.h>
+
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    PSTR lpCmdLine, INT nCmdShow)
+{
+    return main();
+}
+#endif
