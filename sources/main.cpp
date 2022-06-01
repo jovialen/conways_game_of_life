@@ -5,13 +5,21 @@
 #include <tex.hpp>
 
 #define DEAD_CELL (tex::vec4<float>{ 0, 0, 0, 1 })
-#define LIVE_CELL (tex::vec4<float>{ 1, 1, 1, 1 })
 
 constexpr int TICKS_PER_SECOND = 10;
 
 bool is_alive(tex::vec4<float> cell)
 {
 	return cell.r > 0 || cell.g > 0 || cell.b > 0;
+}
+
+tex::vec4<float> get_cell_color(tex::world &world, tex::vec2<int> position)
+{
+	tex::vec4<float> cell_color;
+	cell_color.r = position.x / (float)tex::size(world).x;
+	cell_color.g = position.y / (float)tex::size(world).y;
+	cell_color.b = 1 - (cell_color.r / 2.0f + cell_color.g / 2.0f);
+	return cell_color;
 }
 
 std::vector<bool> get_neighbours(tex::world &world, tex::vec2<int> position)
@@ -63,7 +71,7 @@ void tick(tex::world &world, tex::vec4<float> *back_buffer)
 		}
 
 		// update buffer
-		back_buffer[tex::backend::get_linear_index(world, position)] = cell_alive ? LIVE_CELL : DEAD_CELL;
+		back_buffer[tex::backend::get_linear_index(world, position)] = cell_alive ? get_cell_color(world, position) : DEAD_CELL;
 		return tex::get(world, position);
 	});
 }
@@ -75,7 +83,8 @@ void process_input(tex::world &world, bool *running)
 	{
 		if (tex::get_mouse_down(world, tex::mouse_button::LEFT))
 		{
-			tex::set(world, hovered_cell, LIVE_CELL);
+			auto cell_color = get_cell_color(world, hovered_cell);
+			tex::set(world, hovered_cell, cell_color);
 		}
 		else if (tex::get_mouse_down(world, tex::mouse_button::RIGHT))
 		{
