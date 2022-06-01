@@ -44,9 +44,9 @@ std::vector<bool> get_neighbours(tex::map &map, tex::vec2<int> position)
 	return neighbours;
 }
 
-void tick(tex::world &world, tex::vec4<float> *back_buffer)
+void tick(tex::world &world, tex::map &back_map)
 {
-	tex::process(world, [&back_buffer](tex::map &map, tex::vec2<int> position) {
+	tex::process(*tex::get_map(world), &back_map, [](tex::map &map, tex::vec2<int> position) {
 		bool cell_alive = is_alive(tex::get(map, position));
 
 		// get cell neighbours
@@ -71,8 +71,7 @@ void tick(tex::world &world, tex::vec4<float> *back_buffer)
 		}
 
 		// update buffer
-		back_buffer[tex::backend::get_linear_index(map, position)] = cell_alive ? get_cell_color(map, position) : DEAD_CELL;
-		return tex::get(map, position);
+		return cell_alive ? get_cell_color(map, position) : DEAD_CELL;
 	});
 }
 
@@ -107,12 +106,11 @@ int main()
 	tex::world world("Conway's Game of Life");
 
 	// create back buffer to draw on while working on a new frame
-	size_t capacity = tex::size(world).x * tex::size(world).y;
-	tex::vec4<float> *back = new tex::vec4<float>[capacity];
+	tex::map back(tex::size(world));
 
 	// clear front and back buffers
 	std::fill(tex::begin(world), tex::end(world), DEAD_CELL);
-	std::fill(back,              back + capacity, DEAD_CELL);
+	std::fill(tex::begin(back),  tex::end(back),  DEAD_CELL);
 
 	double timer = 0;
 	bool running = false;
@@ -128,12 +126,10 @@ int main()
 			// simulate a tick
 			tick(world, back);
 
-			// swap fron and back buffers
-			std::swap(world.m.data, back);
+			// swap front and back buffers
+			tex::swap(world, back);
 		}
 	}
-
-	delete[] back;
 
 	return 0;
 }
