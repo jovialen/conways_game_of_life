@@ -19,6 +19,7 @@ tex::vec4<float> get_cell_color(tex::map &map, tex::vec2<int> position)
 	cell_color.r = position.x / (float)tex::size(map).x;
 	cell_color.g = position.y / (float)tex::size(map).y;
 	cell_color.b = 1 - (cell_color.r / 2.0f + cell_color.g / 2.0f);
+	cell_color.a = 1;
 	return cell_color;
 }
 
