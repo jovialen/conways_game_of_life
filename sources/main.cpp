@@ -14,34 +14,40 @@ bool is_alive(tex::vec4<float> cell)
 	return cell.r > 0 || cell.g > 0 || cell.b > 0;
 }
 
+std::vector<bool> get_neighbours(tex::world &world, tex::vec2<int> position)
+{
+	std::vector<bool> neighbours;
+	for (int x_off = -1; x_off <= 1; x_off++)
+	{
+		for (int y_off = -1; y_off <= 1; y_off++)
+		{
+			if (x_off == 0 && y_off == 0) continue;
+
+			tex::vec2<int> neighbour_cell = position;
+			neighbour_cell.x += x_off;
+			neighbour_cell.y += y_off;
+
+			if (tex::in_bounds(world, neighbour_cell))
+			{
+				neighbours.push_back(is_alive(tex::get(world, neighbour_cell)));
+			}
+		}
+	}
+	return neighbours;
+}
+
 void tick(tex::world &world, tex::vec4<float> *back_buffer)
 {
 	tex::process(world, [&back_buffer](tex::world &world, tex::vec2<int> position) {
 		bool cell_alive = is_alive(tex::get(world, position));
 
 		// get cell neighbours
-		std::vector<bool> neighbours;
-		for (int x_off = -1; x_off <= 1; x_off++)
-		{
-			for (int y_off = -1; y_off <= 1; y_off++)
-			{
-				if (x_off == 0 && y_off == 0) continue;
-
-				tex::vec2<int> neighbour_cell = position;
-				neighbour_cell.x += x_off;
-				neighbour_cell.y += y_off;
-
-				if (tex::in_bounds(world, neighbour_cell))
-				{
-					neighbours.push_back(is_alive(tex::get(world, neighbour_cell)));
-				}
-			}
-		}
-
+		auto neighbours = get_neighbours(world, position);
 		int num_alive = std::count(neighbours.begin(), neighbours.end(), true);
 
 		if (cell_alive)
 		{
+			// check if the cell has to many or to few neighbours to survive
 			if (num_alive < 2 || num_alive > 3)
 			{
 				cell_alive = false;
@@ -49,12 +55,14 @@ void tick(tex::world &world, tex::vec4<float> *back_buffer)
 		}
 		else
 		{
+			// check if the cell has enough neighbours to become alive
 			if (num_alive == 3)
 			{
 				cell_alive = true;
 			}
 		}
 
+		// update buffer
 		back_buffer[tex::backend::get_linear_index(world, position)] = cell_alive ? LIVE_CELL : DEAD_CELL;
 		return tex::get(world, position);
 	});
