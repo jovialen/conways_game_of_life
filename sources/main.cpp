@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #include <vector>
 
 #include <tex.hpp>
@@ -60,6 +61,32 @@ void tick(tex::world &world, tex::vec4<float> *back_buffer)
 	});
 }
 
+void process_input(tex::world &world, bool *running)
+{
+	tex::vec2<int> hovered_cell = tex::get_hovered_cell(world);
+	if (tex::in_bounds(world, hovered_cell))
+	{
+		if (tex::get_mouse_down(world, tex::mouse_button::LEFT))
+		{
+			std::cout << "Placing tile" << std::endl;
+			tex::set(world, hovered_cell, LIVE_CELL);
+		}
+		else if (tex::get_mouse_down(world, tex::mouse_button::RIGHT))
+		{
+			tex::set(world, hovered_cell, DEAD_CELL);
+		}
+	}
+
+	if (tex::get_key_down(world, tex::key::SPACE))
+	{
+		*running = false;
+	}
+	else if (tex::get_key_down(world, tex::key::ENTER))
+	{
+		*running = true;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	tex::world world("Conway's Game of Life");
@@ -76,30 +103,9 @@ int main(int argc, char *argv[])
 	bool running = false;
 	while (tex::update(world))
 	{
+		process_input(world, &running);
+
 		timer += tex::get_delta_time(world);
-
-		tex::vec2<int> hovered_cell = tex::get_hovered_cell(world);
-		if (tex::in_bounds(world, hovered_cell))
-		{
-			if (tex::get_mouse_down(world, tex::mouse_button::LEFT))
-			{
-				tex::set(world, hovered_cell, LIVE_CELL);
-			}
-			else if (tex::get_mouse_down(world, tex::mouse_button::RIGHT))
-			{
-				tex::set(world, hovered_cell, DEAD_CELL);
-			}
-		}
-
-		if (tex::get_key_down(world, tex::key::SPACE))
-		{
-			running = false;
-		}
-		else if (tex::get_key_down(world, tex::key::ENTER))
-		{
-			running = true;
-		}
-
 		if (timer >= 1.0 / (double) TICKS_PER_SECOND && running)
 		{
 			timer = 0;
