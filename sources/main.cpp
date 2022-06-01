@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include <vector>
 
 #include <tex.hpp>
@@ -68,7 +67,6 @@ void process_input(tex::world &world, bool *running)
 	{
 		if (tex::get_mouse_down(world, tex::mouse_button::LEFT))
 		{
-			std::cout << "Placing tile" << std::endl;
 			tex::set(world, hovered_cell, LIVE_CELL);
 		}
 		else if (tex::get_mouse_down(world, tex::mouse_button::RIGHT))
@@ -114,10 +112,8 @@ int main(int argc, char *argv[])
 			tick(world, back);
 
 			// swap fron and back buffers
-			tex::vec4<float> **front = &world.m.data;
-			auto tmp = *front;
-			*front = back;
-			back = tmp;
+			//tex::vec4<float> **front = &world.m.data;
+			std::swap(world.m.data, back);
 		}
 	}
 
