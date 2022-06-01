@@ -129,7 +129,6 @@ int main()
 			tick(world, back);
 
 			// swap fron and back buffers
-			//tex::vec4<float> **front = &world.m.data;
 			std::swap(world.m.data, back);
 		}
 	}
